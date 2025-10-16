@@ -1,0 +1,38 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPagePrincipal.Master.cs" Inherits="Agenda.Web.Site1" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <header> <h1>Agenda</h1></header>
+        <nav>
+            <asp:Menu ID="Menu1" runat="server" OnMenuItemClick="Menu1_MenuItemClick">
+                <Items>
+                    <asp:MenuItem NavigateUrl="~/Index.aspx" Text="Home" Value="Home"></asp:MenuItem>
+                    <asp:MenuItem NavigateUrl="~/weUsuario.aspx" Text="Usuario" Value="Usuario"></asp:MenuItem>
+                    <asp:MenuItem Text="Contato" Value="Contato" NavigateUrl="~/weContato.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Sair" Value="Sair"></asp:MenuItem>
+                </Items>
+            </asp:Menu>
+        </nav>
+        <main>
+            <div>
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </main>
+        <footer>
+            <h2>Site desenvolvido por
+                <asp:HyperLink ID="HyperLink1" runat="server">Arthur</asp:HyperLink>
+            </h2>
+        </footer>
+    </form>
+</body>
+</html>
