@@ -20,8 +20,8 @@
                     <asp:Button ID="DeleteButton" runat="server" CommandName="Delete" Text="Deletar" />
                     <asp:Button ID="EditButton" runat="server" CommandName="Edit" Text="Editar" />
                 </td>
-                <td><asp:Label ID="emailLabel" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:Label ID="nomeLabel" runat="server" Text='<%# Eval("NOME") %>' /></td>
+                <td><asp:Label ID="emailLabel" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:Label ID="senhaLabel" runat="server" Text='<%# Eval("SENHA") %>' /></td>
             </tr>
         </AlternatingItemTemplate>
@@ -32,8 +32,8 @@
                     <asp:Button ID="UpdateButton" runat="server" CommandName="Update" Text="Atualizar" />
                     <asp:Button ID="CancelButton" runat="server" CommandName="Cancel" Text="Cancelar" />
                 </td>
-                <td><asp:TextBox ID="emailTextBox" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:TextBox ID="nomeTextBox" runat="server" Text='<%# Eval("NOME") %>' /></td>
+                <td><asp:TextBox ID="emailTextBox" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:TextBox ID="senhaTextBox" runat="server" Text='<%# Eval("SENHA") %>' /></td>
             </tr>
         </EditItemTemplate>
@@ -56,8 +56,8 @@
                     <asp:Button ID="DeleteButton" runat="server" CommandName="Delete" Text="Deletar" />
                     <asp:Button ID="EditButton" runat="server" CommandName="Edit" Text="Editar" />
                 </td>
-                <td><asp:Label ID="emailLabel" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:Label ID="nomeLabel" runat="server" Text='<%# Eval("NOME") %>' /></td>
+                <td><asp:Label ID="emailLabel" runat="server" Text='<%# Eval("EMAIL") %>' /></td>
                 <td><asp:Label ID="senhaLabel" runat="server" Text='<%# Eval("SENHA") %>' /></td>
             </tr>
         </ItemTemplate>

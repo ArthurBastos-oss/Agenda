@@ -11,7 +11,10 @@ namespace Agenda.Web
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (Request.Cookies["login"] == null)
+            {
+                Response.Redirect("~/login.aspx");
+            }
         }
 
         protected void Menu1_MenuItemClick(object sender, MenuEventArgs e)

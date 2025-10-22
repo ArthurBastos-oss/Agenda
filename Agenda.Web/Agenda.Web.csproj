@@ -69,6 +69,8 @@
   <ItemGroup>
     <Content Include="Imagem\agenda.png" />
     <Content Include="Index.aspx" />
+    <Content Include="Login.aspx" />
+    <Content Include="Tarefa.aspx" />
     <Content Include="weContato.aspx" />
     <Content Include="weUsuario.aspx" />
     <Content Include="Web.config" />
@@ -81,6 +83,13 @@
     <Compile Include="Index.aspx.designer.cs">
       <DependentUpon>Index.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterPagePrincipal.Master.cs">
       <DependentUpon>MasterPagePrincipal.Master</DependentUpon>
@@ -88,6 +97,13 @@
     </Compile>
     <Compile Include="MasterPagePrincipal.Master.designer.cs">
       <DependentUpon>MasterPagePrincipal.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Tarefa.aspx.cs">
+      <DependentUpon>Tarefa.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Tarefa.aspx.designer.cs">
+      <DependentUpon>Tarefa.aspx</DependentUpon>
     </Compile>
     <Compile Include="weContato.aspx.cs">
       <DependentUpon>weContato.aspx</DependentUpon>
@@ -105,6 +121,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="libman.json" />
     <None Include="packages.config" />
     <Content Include="MasterPagePrincipal.Master" />
     <None Include="Web.Debug.config">

@@ -1,6 +1,7 @@
 ﻿using Agenda.Data;
 using Agenda.Mdl;
 using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -47,6 +48,25 @@ namespace Agenda.Svc
                     cmd.Parameters.Add(new OracleParameter("Senha", usuario.Senha));
                     cmd.ExecuteNonQuery();
                     
+                }
+            }
+        }
+
+        public static bool LogarUsuario(string email, string senha)
+        {
+            using (OracleConnection conn = new Conexao().AbrirConexao())
+            {
+                string sql = "SELECT * FROM Usuario WHERE Email = :Email AND Senha = :Senha";
+
+                using (OracleCommand cmd = new OracleCommand(sql, conn))
+                {
+                    cmd.Parameters.Add(new OracleParameter("Email", email));
+                    cmd.Parameters.Add(new OracleParameter("Senha", senha));
+
+                    using (OracleDataReader da = cmd.ExecuteReader())
+                    {
+                        return da.HasRows;
+                    }
                 }
             }
         }

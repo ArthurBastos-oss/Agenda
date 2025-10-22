@@ -18,7 +18,8 @@
                     <asp:MenuItem NavigateUrl="~/Index.aspx" Text="Home" Value="Home"></asp:MenuItem>
                     <asp:MenuItem NavigateUrl="~/weUsuario.aspx" Text="Usuario" Value="Usuario"></asp:MenuItem>
                     <asp:MenuItem Text="Contato" Value="Contato" NavigateUrl="~/weContato.aspx"></asp:MenuItem>
-                    <asp:MenuItem Text="Sair" Value="Sair"></asp:MenuItem>
+                    <asp:MenuItem NavigateUrl="~/Tarefa.aspx" Text="Tarefa" Value="Tarefa"></asp:MenuItem>
+                    <asp:MenuItem Text="Sair" Value="Sair" NavigateUrl="~/Login.aspx"></asp:MenuItem>
                 </Items>
             </asp:Menu>
         </nav>
