@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Data\Conexao.cs" />
     <Compile Include="Mdl\Contato.cs" />
+    <Compile Include="Mdl\Recorrencia.cs" />
     <Compile Include="Mdl\Tarefa.cs" />
     <Compile Include="Mdl\TarefaContato.cs" />
     <Compile Include="Mdl\Usuario.cs" />

@@ -15,6 +15,15 @@
     <br />
     <asp:TextBox ID="DataEndBox" runat="server" TextMode="DateTimeLocal" Width="200px"></asp:TextBox>
     <br />
+    <asp:Label ID="LRecorrencia" runat="server" Text="Label">Tipo de rotina</asp:Label>
+    <asp:DropDownList ID="ddlRecorrencia" runat="server" CssClass="form-select">
+        <asp:ListItem Text="Nenhuma" Value="0" />
+        <asp:ListItem Text="Diária" Value="1" />
+        <asp:ListItem Text="Semanal" Value="2" />
+        <asp:ListItem Text="Mensal" Value="3" />
+        <asp:ListItem Text="Anual" Value="4" />
+    </asp:DropDownList>
+    <br />
     <asp:Panel ID="LstContatos" runat="server">
         <asp:Label runat="server" Text="Label">Contatos relacionados:</asp:Label>
         <br />

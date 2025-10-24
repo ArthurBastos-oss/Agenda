@@ -124,32 +124,85 @@ namespace Agenda.Web
 
         protected void BtSalvar_Click(object sender, EventArgs e)
         {
-            var tarefa = new Mdl.Tarefa();
-            tarefa.Descricao = TxtDesc.Text.Trim();
-            tarefa.DataInicio = DateTime.Parse(DataIniBox.Text);
-            tarefa.DataFim = DateTime.Parse(DataEndBox.Text);
-            
-            int idTarefa = SvcTarefa.AddTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Descricao);
-
-            List<int> contatosSelecionados = new List<int>();
-            foreach (Control ctrl in LstContatos.Controls)
+            try
             {
-                if (ctrl is DropDownList ddl && !string.IsNullOrEmpty(ddl.SelectedValue))
-                    contatosSelecionados.Add(int.Parse(ddl.SelectedValue));
-            }
+                var tarefa = new Mdl.Tarefa();
+                tarefa.Descricao = TxtDesc.Text.Trim();
+                tarefa.DataInicio = DateTime.Parse(DataIniBox.Text);
+                tarefa.DataFim = DateTime.Parse(DataEndBox.Text);
+                tarefa.Recorrencia = (Recorrencia)Enum.Parse(typeof(Recorrencia), ddlRecorrencia.SelectedValue);
 
-            if (contatosSelecionados.Count > 0)
-            {
+                int idTarefa = SvcTarefa.AddTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Descricao, tarefa.Recorrencia);
+
+                List<int> contatosSelecionados = new List<int>();
+                foreach (Control ctrl in LstContatos.Controls)
+                {
+                    if (ctrl is DropDownList ddl && !string.IsNullOrEmpty(ddl.SelectedValue))
+                        contatosSelecionados.Add(int.Parse(ddl.SelectedValue));
+                }
+
+                
                 foreach (int idContato in contatosSelecionados)
                 {
                     SvcTarefa.AddTarefaContato(idTarefa, idContato);
                 }
+
+                if (tarefa.Recorrencia != Recorrencia.Nenhuma)
+                {
+                    DateTime dataAtualInicio = tarefa.DataInicio;
+                    DateTime dataAtualFim = tarefa.DataFim;
+
+                    DateTime limite = tarefa.DataInicio.AddYears(1);
+
+                    while (true)
+                    {
+                        switch (tarefa.Recorrencia)
+                        {
+                            case Recorrencia.Diaria:
+                                dataAtualInicio = dataAtualInicio.AddDays(1);
+                                dataAtualFim = dataAtualFim.AddDays(1);
+                                break;
+
+                            case Recorrencia.Semanal:
+                                dataAtualInicio = dataAtualInicio.AddDays(7);
+                                dataAtualFim = dataAtualFim.AddDays(7);
+                                break;
+
+                            case Recorrencia.Mensal:
+                                dataAtualInicio = dataAtualInicio.AddMonths(1);
+                                dataAtualFim = dataAtualFim.AddMonths(1);
+                                break;
+
+                            case Recorrencia.Anual:
+                                dataAtualInicio = dataAtualInicio.AddYears(1);
+                                dataAtualFim = dataAtualFim.AddYears(1);
+                                break;
+                        }
+
+                        if (dataAtualInicio > limite)
+                            break;
+
+                        int novoIdTarefa = SvcTarefa.AddTarefa(dataAtualInicio, dataAtualFim, tarefa.Descricao, tarefa.Recorrencia);
+
+                        foreach (int idContato in contatosSelecionados)
+                        {
+                            SvcTarefa.AddTarefaContato(novoIdTarefa, idContato);
+                        }
+                    }
+
+                    Lmsg.Text = $"Tarefa cadastrada com recorrência ({tarefa.Recorrencia}).";
+                }
+                else
+                {
+                    Lmsg.Text = contatosSelecionados.Count > 0
+                        ? "Tarefa cadastrada com contatos relacionados."
+                        : "Tarefa cadastrada sem contatos relacionados.";
+                }
             }
-
-            Lmsg.Text = contatosSelecionados.Count > 0
-                ? "Tarefa cadastrada com contatos relacionados."
-                : "Tarefa cadastrada sem contatos relacionados.";
-
+            catch (Exception ex)
+            {
+                Lmsg.Text = "Erro ao cadastrar tarefa: " + ex.Message;
+            }
         }
     }
 }

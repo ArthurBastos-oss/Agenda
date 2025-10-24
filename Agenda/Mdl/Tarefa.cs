@@ -12,5 +12,6 @@ namespace Agenda.Mdl
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get;set; }
         public string Descricao { get; set; }
+        public Recorrencia Recorrencia { get; set; } = Recorrencia.Nenhuma;
     }
 }
