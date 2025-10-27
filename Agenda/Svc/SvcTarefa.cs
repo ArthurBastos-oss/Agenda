@@ -1,12 +1,8 @@
-﻿using Agenda.Mdl;
-using Agenda.Data;
+﻿using Agenda.Data;
+using Agenda.Mdl;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Agenda.Svc
 {
@@ -20,7 +16,6 @@ namespace Agenda.Svc
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                    // Parâmetro de retorno deve vir primeiro
                     OracleParameter retorno = new OracleParameter("RETURN_VALOR", OracleDbType.Int32);
                     retorno.Direction = System.Data.ParameterDirection.ReturnValue;
                     cmd.Parameters.Add(retorno);
@@ -34,12 +29,11 @@ namespace Agenda.Svc
 
                     return count > 0;
                 }
-
             }
         }
 
 
-        public static int AddTarefa(DateTime dataInicio, DateTime dataFim, string descricao, Recorrencia recorrencia)
+        public static int AddTarefa(DateTime dataInicio, DateTime dataFim, string descricao, Recorrencia recorrencia, List<int> contatos = null)
         {
             if (VerificaTarefa(dataInicio, dataFim))
                 throw new Exception("Já existe uma tarefa nesse período. Escolha outro intervalo de tempo.");
@@ -47,45 +41,47 @@ namespace Agenda.Svc
             if (dataFim < dataInicio)
                 throw new Exception("Data de término deve vir após a data de início.");
 
+            string contatosCsv = (contatos != null && contatos.Count > 0)
+                ? string.Join(",", contatos)
+                : null;
+
             using (OracleConnection conn = new Conexao().AbrirConexao())
             {
-                string sql = @"INSERT INTO Tarefa (DataInicio, DataFim, Descricao, Recorrencia)
-                       VALUES (:DataInicio, :DataFim, :Descricao, :Recorrencia)
-                       RETURNING Id INTO :id";
-
-                using (OracleCommand cmd = new OracleCommand(sql, conn))
+                using (OracleCommand cmd = conn.CreateCommand())
                 {
-                    cmd.Parameters.Add(":DataInicio", dataInicio);
-                    cmd.Parameters.Add(":DataFim", dataFim);
-                    cmd.Parameters.Add(":Descricao", descricao);
-                    cmd.Parameters.Add(":Recorrencia", (int)recorrencia);
+                    cmd.BindByName = true;
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    cmd.CommandText = "BEGIN :pResult := PKG_TAREFA.CriarTarefaCompleta(:pDataInicio, :pDataFim, :pDescricao, :pRecorrencia, :pContatosCsv); END;";
 
-                    OracleParameter pid = new OracleParameter(":id", OracleDbType.Int32, System.Data.ParameterDirection.Output);
-                    cmd.Parameters.Add(pid);
+                    var pDataInicio = cmd.Parameters.Add("pDataInicio", OracleDbType.Date);
+                    pDataInicio.Value = dataInicio;
+
+                    var pDataFim = cmd.Parameters.Add("pDataFim", OracleDbType.Date);
+                    pDataFim.Value = dataFim;
+
+                    var pDescricao = cmd.Parameters.Add("pDescricao", OracleDbType.Varchar2);
+                    pDescricao.Size = 4000;
+                    pDescricao.Value = descricao ?? (object)DBNull.Value;
+
+                    var pRecorrencia = cmd.Parameters.Add("pRecorrencia", OracleDbType.Int32);
+                    pRecorrencia.Value = (int)recorrencia;
+
+                    var pContatosCsv = cmd.Parameters.Add("pContatosCsv", OracleDbType.Varchar2);
+                    pContatosCsv.Size = 4000;
+                    pContatosCsv.Value = contatosCsv ?? (object)DBNull.Value;
+
+                    var pResult = cmd.Parameters.Add("pResult", OracleDbType.Decimal);
+                    pResult.Direction = System.Data.ParameterDirection.ReturnValue;
 
                     cmd.ExecuteNonQuery();
-                    return Convert.ToInt32(pid.Value.ToString());
+
+                    var od = (Oracle.ManagedDataAccess.Types.OracleDecimal)pResult.Value;
+                    return od.IsNull ? 0 : od.ToInt32();
                 }
             }
         }
 
 
-        
 
-        public static void AddTarefaContato(int idTarefa, int idContato)
-        { 
-            using (OracleConnection conn = new Conexao().AbrirConexao()) 
-            { 
-                string sql = "INSERT INTO TarefaContato (IdTarefa, IdContato) " + 
-                            "VALUES (:idTarefa, :idContato)"; 
-                
-                using (OracleCommand cmd = new OracleCommand(sql, conn)) 
-                { 
-                    cmd.Parameters.Add(":idTarefa", idTarefa); 
-                    cmd.Parameters.Add(":idContato", idContato);
-                    cmd.ExecuteNonQuery(); 
-                } 
-            } 
-        }
     }
 }

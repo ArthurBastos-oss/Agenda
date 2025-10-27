@@ -132,7 +132,6 @@ namespace Agenda.Web
                 tarefa.DataFim = DateTime.Parse(DataEndBox.Text);
                 tarefa.Recorrencia = (Recorrencia)Enum.Parse(typeof(Recorrencia), ddlRecorrencia.SelectedValue);
 
-                int idTarefa = SvcTarefa.AddTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Descricao, tarefa.Recorrencia);
 
                 List<int> contatosSelecionados = new List<int>();
                 foreach (Control ctrl in LstContatos.Controls)
@@ -141,18 +140,16 @@ namespace Agenda.Web
                         contatosSelecionados.Add(int.Parse(ddl.SelectedValue));
                 }
 
+                int idTarefa = SvcTarefa.AddTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Descricao, tarefa.Recorrencia, contatosSelecionados);
                 
-                foreach (int idContato in contatosSelecionados)
-                {
-                    SvcTarefa.AddTarefaContato(idTarefa, idContato);
-                }
+                
 
                 if (tarefa.Recorrencia != Recorrencia.Nenhuma)
                 {
                     DateTime dataAtualInicio = tarefa.DataInicio;
                     DateTime dataAtualFim = tarefa.DataFim;
 
-                    DateTime limite = tarefa.DataInicio.AddYears(1);
+                    DateTime limite = tarefa.DataInicio.AddYears(5);
 
                     while (true)
                     {
@@ -182,12 +179,9 @@ namespace Agenda.Web
                         if (dataAtualInicio > limite)
                             break;
 
-                        int novoIdTarefa = SvcTarefa.AddTarefa(dataAtualInicio, dataAtualFim, tarefa.Descricao, tarefa.Recorrencia);
+                        int novoIdTarefa = SvcTarefa.AddTarefa(dataAtualInicio, dataAtualFim, tarefa.Descricao, tarefa.Recorrencia, contatosSelecionados);
 
-                        foreach (int idContato in contatosSelecionados)
-                        {
-                            SvcTarefa.AddTarefaContato(novoIdTarefa, idContato);
-                        }
+                        
                     }
 
                     Lmsg.Text = $"Tarefa cadastrada com recorrência ({tarefa.Recorrencia}).";

@@ -35,7 +35,7 @@ namespace Agenda.Svc
             return lista;
         }
 
-        public static void AddContato(Contato pContato) 
+        public static bool AddContato(Contato pContato) 
         { 
             using (OracleConnection conn = new Conexao().AbrirConexao()) 
             {
@@ -45,20 +45,21 @@ namespace Agenda.Svc
 
                 using (OracleCommand cmd = new OracleCommand(sql, conn)) 
                 { 
-                    cmd.Parameters.Add(new OracleParameter("pNome", pContato.Nome)); 
                     cmd.Parameters.Add(new OracleParameter("pEmail", pContato.Email)); 
+                    cmd.Parameters.Add(new OracleParameter("pNome", pContato.Nome)); 
                     cmd.Parameters.Add(new OracleParameter("pTelefone", pContato.Telefone));
 
                     OracleParameter pId = new OracleParameter("pId", OracleDbType.Int32);
                     pId.Direction = System.Data.ParameterDirection.Output;
                     cmd.Parameters.Add(pId);
 
-                    cmd.ExecuteNonQuery();
+                    int linhasAfetadas = cmd.ExecuteNonQuery();
 
-                    //OracleDeciamal oracleDeciamal 
                     OracleDecimal oracleDecimal = (OracleDecimal)pId.Value;
                     pContato.Id = oracleDecimal.ToInt32();
-                    
+
+                    return linhasAfetadas > 0;
+
                 } 
             } 
         }
