@@ -35,7 +35,7 @@ namespace Agenda.Svc
             return lista;
         }
 
-        public static bool AddContato(Contato pContato) 
+        public static void AddContato(Contato pContato) 
         { 
             using (OracleConnection conn = new Conexao().AbrirConexao()) 
             {
@@ -53,18 +53,15 @@ namespace Agenda.Svc
                     pId.Direction = System.Data.ParameterDirection.Output;
                     cmd.Parameters.Add(pId);
 
-                    int linhasAfetadas = cmd.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     OracleDecimal oracleDecimal = (OracleDecimal)pId.Value;
                     pContato.Id = oracleDecimal.ToInt32();
-
-                    return linhasAfetadas > 0;
-
                 } 
             } 
         }
 
-        public static bool EditContato(Contato contato)
+        public static void EditContato(Contato contato)
         {
             using (OracleConnection conn = new Conexao().AbrirConexao())
             {
@@ -75,7 +72,7 @@ namespace Agenda.Svc
                     cmd.Parameters.Add("Email", contato.Email);
                     cmd.Parameters.Add("Telefone", contato.Telefone);
                     cmd.Parameters.Add("Id", contato.Id);
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

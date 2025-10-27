@@ -72,7 +72,7 @@ namespace Agenda.Svc
         }
 
 
-        public static bool EditUsuario(Usuario usuario)
+        public static void EditUsuario(Usuario usuario)
         {
             using (OracleConnection conn = new Conexao().AbrirConexao())
             {
@@ -81,8 +81,8 @@ namespace Agenda.Svc
                 {
                     cmd.Parameters.Add(":Nome", usuario.Nome);
                     cmd.Parameters.Add(":Senha", usuario.Senha);
-                    cmd.Parameters.Add(":Email", usuario.Email); // chave primária usada no WHERE
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.Parameters.Add(":Email", usuario.Email);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

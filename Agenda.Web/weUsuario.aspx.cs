@@ -63,7 +63,7 @@ namespace Agenda.Web
                 Senha = senha
             };
 
-            bool atualizado = SvcUsuario.EditUsuario(usuario);
+            SvcUsuario.EditUsuario(usuario);
 
             ListViewUsuario.EditIndex = -1;
             CarregarUsuarios();
