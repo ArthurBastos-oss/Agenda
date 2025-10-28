@@ -76,5 +76,53 @@ namespace Agenda.Svc
                 }
             }
         }
+
+        public static void LimparContatosDeTeste(OracleConnection conn)
+        {
+            using (var cmd = new OracleCommand(
+                @"DELETE FROM TarefaContato 
+          WHERE IdContato IN (SELECT Id FROM Contato WHERE Email LIKE 'teste%@teste.com')", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            using (var cmd = new OracleCommand(
+                @"DELETE FROM Contato WHERE Email LIKE 'teste%@teste.com'", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        public static Contato BuscarContatoPorId(int id)
+        {
+            using (OracleConnection conn = new Conexao().AbrirConexao())
+            {
+                string sql = "SELECT Id, Nome, Email, Telefone FROM Contato WHERE Id = :Id";
+
+                using (OracleCommand cmd = new OracleCommand(sql, conn))
+                {
+                    cmd.Parameters.Add(new OracleParameter("Id", id));
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Contato
+                            {
+                                Id = reader.GetInt32(0),
+                                Nome = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Telefone = reader.GetString(3)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
     }
 }

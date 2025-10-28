@@ -16,10 +16,7 @@ namespace Agenda.Tst
         {
             conn = new Conexao().AbrirConexao();
 
-            using (var cmd = new OracleCommand("DELETE FROM Contato WHERE Email LIKE 'teste%@teste.com'", conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            SvcUsuario.LimparUsuariosDeTeste(conn);
         }
 
         [TestCleanup]
@@ -47,13 +44,10 @@ namespace Agenda.Tst
 
             SvcUsuario.AddUsuario(usuario);
 
-            using (var cmd = new OracleCommand("SELECT COUNT(*) FROM Usuario WHERE Email = :Email", conn))
-            {
-                cmd.Parameters.Add(new OracleParameter("Email", usuario.Email));
-                var count = Convert.ToInt32(cmd.ExecuteScalar());
+            int count = SvcUsuario.BuscarUsuario(usuario.Email);
 
-                Assert.AreEqual(1, count, "Usuário não foi inserido no banco de dados.");
-            }
+            Assert.AreEqual(1, count, "Usuário não foi inserido no banco de dados.");
+            
         }
 
         [TestMethod]
@@ -75,16 +69,23 @@ namespace Agenda.Tst
         }
 
         [TestMethod]
+        [ExpectedException(typeof(OracleException))]
+        public void TesteAddUsuarioInvalido()
+        {
+            var usuario1 = new Usuario();
+            usuario1.Email = null;
+            usuario1.Nome = "Teste1";
+            usuario1.Senha = "teste123";
+            SvcUsuario.AddUsuario(usuario1);
+        }
+
+        [TestMethod]
         public void TesteEditUsuario()
         {
-            using (var cmd = new OracleCommand("DELETE FROM Usuario WHERE Email = 'teste10@teste.com'", conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
 
             var usuario = new Usuario();
-            usuario.Email = "teste10@teste.com";
-            usuario.Nome = "Teste10";
+            usuario.Email = "teste@teste.com";
+            usuario.Nome = "Teste";
             usuario.Senha = "teste123";
             SvcUsuario.AddUsuario(usuario);
 
@@ -92,22 +93,51 @@ namespace Agenda.Tst
             usuario.Senha = "teste12345";
             SvcUsuario.EditUsuario(usuario);
 
-            using (var cmd = new OracleCommand(
-                "SELECT Nome, Senha FROM Usuario WHERE Email = :Email", conn))
-            {
-                cmd.Parameters.Add(new OracleParameter("Email", usuario.Email));
-                using (var reader = cmd.ExecuteReader())
-                {
-                    Assert.IsTrue(reader.Read(), "Usuario não encontrado");
+            var usuarioEditado = SvcUsuario.BuscarUsuarioPorEmail(usuario.Email);
 
-                    string nome = reader.GetString(0);
-                    string senha = reader.GetString(1);
+            Assert.IsNotNull(usuarioEditado, "Usuario não encontrado");
+            Assert.AreEqual("Teste Atualizado", usuarioEditado.Nome);
+            Assert.AreEqual("teste12345", usuarioEditado.Senha);
 
-                    Assert.AreEqual("Teste Atualizado", nome);
-                    Assert.AreEqual("teste12345", senha);
-                }
-            }
+        }
 
+        [TestMethod]
+        public void TesteLogarUsuario()
+        {
+            var usuario = new Usuario();
+            usuario.Email = "teste@teste.com";
+            usuario.Nome = "Teste";
+            usuario.Senha = "teste123";
+            SvcUsuario.AddUsuario(usuario);
+
+            bool logado = SvcUsuario.LogarUsuario(usuario.Email, usuario.Senha);
+
+            Assert.IsTrue(logado, "Usuario não existente.");
+        }
+
+        [TestMethod]
+        public void TesteLogarUsuarioInexistente()
+        {
+            string email = "testein@teste.com";
+            string senha = "teste123";
+
+            bool logado = SvcUsuario.LogarUsuario(email, senha);
+
+            Assert.IsFalse(logado);
+        }
+
+        [TestMethod]
+        public void TesteDeleteUsuario()
+        {
+            var usuario = new Usuario();
+            usuario.Email = "teste@teste.com";
+            usuario.Nome = "Teste";
+            usuario.Senha = "teste123";
+            SvcUsuario.AddUsuario(usuario);
+
+            bool logado = SvcUsuario.DeleteUsuario(usuario.Email);
+
+            Assert.IsTrue(logado, "Usuario não existente.");
         }
     }
 }

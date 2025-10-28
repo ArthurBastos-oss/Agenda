@@ -109,5 +109,58 @@ namespace Agenda.Svc
 
             return deletado;
         }
+
+        public static void LimparUsuariosDeTeste(OracleConnection conn)
+        {
+            string sql = "DELETE FROM Usuario WHERE Email LIKE 'teste%@teste.com'";
+
+            using (OracleCommand cmd = new OracleCommand(sql, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        public static Usuario BuscarUsuarioPorEmail(string email)
+        {
+            using (OracleConnection conn = new Conexao().AbrirConexao())
+            {
+                string sql = "SELECT Nome, Senha FROM Usuario WHERE Email = :Email";
+
+                using (OracleCommand cmd = new OracleCommand(sql, conn))
+                {
+                    cmd.Parameters.Add(new OracleParameter("Email", email));
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Usuario
+                            {
+                                Nome = reader.GetString(0),
+                                Senha = reader.GetString(1)
+                            };
+                        }
+                    }
+                }
+                return null;
+            }                
+        }
+
+        public static int BuscarUsuario(string email)
+        {
+            using (OracleConnection conn = new Conexao().AbrirConexao())
+            {
+                string sql = "SELECT COUNT(*) FROM Usuario WHERE Email = :Email";
+
+                using (OracleCommand cmd = new OracleCommand( sql, conn))
+                {
+                    cmd.Parameters.Add(new OracleParameter("Email", email));
+
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+
+            }
+        }
     }
 }

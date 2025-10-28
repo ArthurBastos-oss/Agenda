@@ -8,25 +8,18 @@ namespace Agenda.Tst
     [TestClass]
     public class SvcContatoTst
     {
-        private OracleConnection conn;
+        
 
         [TestInitialize]
         public void Setup()
         {
-            conn = new Conexao().AbrirConexao();
+            using var conn = new Conexao().AbrirConexao();
 
-            using (var cmd = new OracleCommand("DELETE FROM Contato WHERE Email LIKE 'teste%@teste.com'", conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            SvcContato.LimparContatosDeTeste(conn);
+
         }
 
-        [TestCleanup]
-        public void Cleanup()
-        { 
-            conn.Close();
-            conn.Dispose();
-        }
+
 
         [TestMethod]
         public void TesteListar()
@@ -40,7 +33,7 @@ namespace Agenda.Tst
         public void TesteAddContato()
         {
             var contato = new Contato();
-            contato.Nome = "Guilherme";
+            contato.Nome = "Teste";
             contato.Email = "teste%@teste.com";
             contato.Telefone = "1521-3094";
 
@@ -51,7 +44,7 @@ namespace Agenda.Tst
 
         [TestMethod]
         [ExpectedException(typeof(OracleException))]
-        public void TesteAddContatoInvelido()
+        public void TesteAddContatoInvalido()
         {
             var contato = new Contato();
             contato.Nome = null;
@@ -77,18 +70,12 @@ namespace Agenda.Tst
 
             SvcContato.EditContato(contato);
 
-            using (var cmd = new OracleCommand(
-                "SELECT Nome, Email, Telefone FROM Contato WHERE Id = :id", conn))
-            {
-                cmd.Parameters.Add(new OracleParameter("id", contato.Id));
-                using (var reader = cmd.ExecuteReader())
-                {
-                    Assert.IsTrue(reader.Read(), "Contato não encontrado");
-                    Assert.AreEqual("Teste Atualizado", reader.GetString(0));
-                    Assert.AreEqual("testeup@testeup.com", reader.GetString(1));
-                    Assert.AreEqual("0000-0000", reader.GetString(2));
-                }
-            }
+            var contatoEditado = SvcContato.BuscarContatoPorId(contato.Id);
+
+            Assert.IsNotNull(contatoEditado, "Contato não encontrado");
+            Assert.AreEqual("Teste Atualizado", contatoEditado.Nome);
+            Assert.AreEqual("testeup@testeup.com", contatoEditado.Email);
+            Assert.AreEqual("0000-0000", contatoEditado.Telefone);
         }
     }
 }

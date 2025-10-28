@@ -81,6 +81,21 @@ namespace Agenda.Svc
             }
         }
 
+        public static void LimparTarefasDeTeste(OracleConnection conn)
+        {
+            using (var cmd = new OracleCommand(
+                @"DELETE FROM TarefaContato 
+          WHERE IdTarefa IN (SELECT Id FROM Tarefa WHERE Descricao LIKE 'Teste%')", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            using (var cmd = new OracleCommand(
+                @"DELETE FROM Tarefa WHERE Descricao LIKE 'Teste%'", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
 
 
     }
