@@ -10,40 +10,47 @@ namespace Agenda.Tst
         [TestInitialize]
         public void Setup()
         {
-            using var conn = new Conexao().AbrirConexao();
-
-            SvcTarefa.LimparTarefasDeTeste(conn);
-
+            SvcTarefa.LimparTarefasDeTeste();
         }
 
         [TestMethod]
         public void TesteVerificaTarefa_TarefaExistente()
         {
-            DateTime inicio = new DateTime(2025, 10, 27, 10, 0, 0);
-            DateTime fim = new DateTime(2025, 10, 27, 12, 0, 0);
+            var tarefa = new Tarefa(); 
+            tarefa.DataInicio = new DateTime(2025, 10, 27, 10, 0, 0);
+            tarefa.DataFim = new DateTime(2025, 10, 27, 12, 0, 0);
+            tarefa.Recorrencia = Recorrencia.Nenhuma;
 
-            bool verificar = SvcTarefa.VerificaTarefa(inicio, fim);
+            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Recorrencia);
             Assert.IsTrue(verificar, "O método retornou falso mesmo sem tarefas existentes.");
         }
 
         [TestMethod]
         public void TesteVerificaTarefa_TarefaNaoExistente()
         {
-            DateTime inicio = new DateTime(2027, 04, 03, 10, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 12, 0, 0);
+            var tarefa = new Tarefa();
+            tarefa.DataInicio = new DateTime(2027, 04, 03, 10, 0, 0);
+            tarefa.DataFim = new DateTime(2027, 04, 03, 12, 0, 0);
+            tarefa.Recorrencia = Recorrencia.Nenhuma;
 
-            bool verificar = SvcTarefa.VerificaTarefa(inicio, fim);
+            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Recorrencia);
             Assert.IsFalse(verificar, "O método retornou verdairo mesmo sem tarefas existentes.");
         }
 
         [TestMethod]
         public void TesteAddTarefa()
         {
-            DateTime inicio = new DateTime(2027, 04, 03, 10, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 12, 0, 0);
-            string descrição = "Teste";
+            List<Tarefa> tarefas = new List<Tarefa>();
 
-            int idTarefa = SvcTarefa.AddTarefa(inicio, fim, descrição, Recorrencia.Nenhuma);
+            tarefas.Add(new Tarefa
+            {
+                DataInicio = new DateTime(2027, 04, 03, 10, 0, 0),
+                DataFim = new DateTime(2027, 04, 03, 12, 0, 0),
+                Descricao = "Teste",
+            });
+            
+
+            int idTarefa = SvcTarefa.AddTarefa(tarefas);
 
             Assert.IsTrue(idTarefa > 0, "O id não foi retornado");
         }
@@ -52,34 +59,53 @@ namespace Agenda.Tst
         [ExpectedException(typeof(Exception))]
         public void TesteAddTarefaExistente()
         {
-            DateTime inicio = new DateTime(2027, 04, 03, 10, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 12, 0, 0);
-            string descrição = "Teste";
+            List<Tarefa> tarefas = new List<Tarefa>();
 
-            SvcTarefa.AddTarefa(inicio, fim, descrição, Recorrencia.Nenhuma);
+            tarefas.Add(new Tarefa
+            {
+                DataInicio = new DateTime(2027, 04, 03, 10, 0, 0),
+                DataFim = new DateTime(2027, 04, 03, 12, 0, 0),
+                Descricao = "Teste",
+            });
 
-            SvcTarefa.AddTarefa(inicio, fim, "Outra Tarefa", Recorrencia.Nenhuma);
+            
+
+            SvcTarefa.AddTarefa(tarefas);
+
+            SvcTarefa.AddTarefa(tarefas);
         }
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void TesteAddTarefa_DataInvetida()
         {
-            DateTime inicio = new DateTime(2027, 04, 03, 12, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 10, 0, 0);
-            string descrição = "Teste";
+            List<Tarefa> tarefas = new List<Tarefa>();
 
-            SvcTarefa.AddTarefa(inicio, fim, descrição, Recorrencia.Nenhuma);
+            tarefas.Add(new Tarefa
+            {
+                DataInicio = new DateTime(2027, 04, 03, 12, 0, 0),
+                DataFim = new DateTime(2027, 04, 03, 10, 0, 0),
+                Descricao = "Teste",
+            });
+
+
+            SvcTarefa.AddTarefa(tarefas);
         }
 
         [TestMethod]
         public void TesteAddTarefaSemContatos()
         {
-            DateTime inicio = new DateTime(2027, 04, 03, 10, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 12, 0, 0);
-            string descrição = "Teste";
+            List<Tarefa> tarefas = new List<Tarefa>();
 
-            int idTarefa = SvcTarefa.AddTarefa(inicio, fim, descrição, Recorrencia.Nenhuma, null);
+            tarefas.Add(new Tarefa
+            {
+                DataInicio = new DateTime(2027, 04, 03, 10, 0, 0),
+                DataFim = new DateTime(2027, 04, 03, 12, 0, 0),
+                Descricao = "Teste",
+                Contatos = new List<TarefaContato>()
+            });
+
+            int idTarefa = SvcTarefa.AddTarefa(tarefas);
 
             Assert.IsTrue(idTarefa > 0, "O id não foi retornado");
         }
@@ -99,12 +125,22 @@ namespace Agenda.Tst
             contato2.Telefone = "2222-2222";
             SvcContato.AddContato(contato2);
 
-            DateTime inicio = new DateTime(2027, 04, 03, 10, 0, 0);
-            DateTime fim = new DateTime(2027, 04, 03, 12, 0, 0);
-            string descrição = "Teste";
-            List<int> contatos = new List<int> { contato1.Id, contato2.Id };
+            List<Tarefa> tarefas = new List<Tarefa>();
 
-            int id = SvcTarefa.AddTarefa(inicio, fim, descrição, Recorrencia.Nenhuma, contatos);
+            tarefas.Add(new Tarefa
+            {
+                DataInicio = new DateTime(2027, 04, 03, 10, 0, 0),
+                DataFim = new DateTime(2027, 04, 03, 12, 0, 0),
+                Descricao = "Teste",
+                Contatos = new List<TarefaContato>()
+                { 
+                    new TarefaContato {IdContato = contato1.Id},
+                    new TarefaContato {IdContato = contato2.Id},
+                }
+            });
+            
+
+            int id = SvcTarefa.AddTarefa(tarefas);
 
             Assert.IsTrue(id > 0, "O id não foi retornado");
         }

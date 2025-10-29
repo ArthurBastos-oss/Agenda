@@ -13,5 +13,6 @@ namespace Agenda.Mdl
         public DateTime DataFim { get;set; }
         public string Descricao { get; set; }
         public Recorrencia Recorrencia { get; set; } = Recorrencia.Nenhuma;
+        public List<TarefaContato> Contatos { get; set; }
     }
 }

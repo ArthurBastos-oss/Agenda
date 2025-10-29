@@ -14,17 +14,9 @@ namespace Agenda.Tst
         [TestInitialize]
         public void Setup()
         {
-            conn = new Conexao().AbrirConexao();
-
-            SvcUsuario.LimparUsuariosDeTeste(conn);
+            SvcUsuario.LimparUsuariosDeTeste();
         }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            conn.Close();
-            conn.Dispose();
-        }
+                
 
         [TestMethod]
         public void TesteListar()

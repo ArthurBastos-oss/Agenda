@@ -77,19 +77,22 @@ namespace Agenda.Svc
             }
         }
 
-        public static void LimparContatosDeTeste(OracleConnection conn)
+        public static void LimparContatosDeTeste()
         {
-            using (var cmd = new OracleCommand(
-                @"DELETE FROM TarefaContato 
-          WHERE IdContato IN (SELECT Id FROM Contato WHERE Email LIKE 'teste%@teste.com')", conn))
+            using (OracleConnection conn = new Conexao().AbrirConexao())
             {
-                cmd.ExecuteNonQuery();
-            }
+                using (var cmd = new OracleCommand(
+                    @"DELETE FROM TarefaContato 
+              WHERE IdContato IN (SELECT Id FROM Contato WHERE Email LIKE 'teste%@teste.com')", conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
 
-            using (var cmd = new OracleCommand(
-                @"DELETE FROM Contato WHERE Email LIKE 'teste%@teste.com'", conn))
-            {
-                cmd.ExecuteNonQuery();
+                using (var cmd = new OracleCommand(
+                    @"DELETE FROM Contato WHERE Email LIKE 'teste%@teste.com'", conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 

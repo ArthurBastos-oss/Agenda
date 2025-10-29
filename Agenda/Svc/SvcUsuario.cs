@@ -110,13 +110,16 @@ namespace Agenda.Svc
             return deletado;
         }
 
-        public static void LimparUsuariosDeTeste(OracleConnection conn)
+        public static void LimparUsuariosDeTeste()
         {
-            string sql = "DELETE FROM Usuario WHERE Email LIKE 'teste%@teste.com'";
-
-            using (OracleCommand cmd = new OracleCommand(sql, conn))
+            using (OracleConnection conn = new Conexao().AbrirConexao())
             {
-                cmd.ExecuteNonQuery();
+                string sql = "DELETE FROM Usuario WHERE Email LIKE 'teste%@teste.com'";
+
+                using (OracleCommand cmd = new OracleCommand(sql, conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 

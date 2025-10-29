@@ -13,10 +13,7 @@ namespace Agenda.Tst
         [TestInitialize]
         public void Setup()
         {
-            using var conn = new Conexao().AbrirConexao();
-
-            SvcContato.LimparContatosDeTeste(conn);
-
+            SvcContato.LimparContatosDeTeste();
         }
 
 
