@@ -21,7 +21,7 @@ namespace Agenda.Tst
             tarefa.DataFim = new DateTime(2025, 10, 27, 12, 0, 0);
             tarefa.Recorrencia = Recorrencia.Nenhuma;
 
-            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Recorrencia);
+            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim);
             Assert.IsTrue(verificar, "O método retornou falso mesmo sem tarefas existentes.");
         }
 
@@ -33,7 +33,7 @@ namespace Agenda.Tst
             tarefa.DataFim = new DateTime(2027, 04, 03, 12, 0, 0);
             tarefa.Recorrencia = Recorrencia.Nenhuma;
 
-            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim, tarefa.Recorrencia);
+            bool verificar = SvcTarefa.VerificaTarefa(tarefa.DataInicio, tarefa.DataFim);
             Assert.IsFalse(verificar, "O método retornou verdairo mesmo sem tarefas existentes.");
         }
 
